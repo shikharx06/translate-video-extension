@@ -1,37 +1,30 @@
-import React from "react";
-import logo from "@assets/img/logo.svg";
+import React, { useEffect, useRef, useState } from "react";
 import "@pages/popup/Popup.css";
-import useStorage from "@src/shared/hooks/useStorage";
-import exampleThemeStorage from "@src/shared/storages/exampleThemeStorage";
 import withSuspense from "@src/shared/hoc/withSuspense";
+import { sendMessageToBackgroundAsync } from "@root/src/chrome/message";
 
 const Popup = () => {
-  const theme = useStorage(exampleThemeStorage);
+  const captureAudio = async () => {
+    // https://stackoverflow.com/questions/50991321/chrome-extension-getusermedia-throws-notallowederror-failed-due-to-shutdown/51009577#51009577
+    await navigator.mediaDevices.getUserMedia({ audio: true });
+
+    sendMessageToBackgroundAsync({
+      type: "startAudioRecording",
+      input: "offscreen",
+    });
+  };
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p className="text-lime-400">
-          Edit <code>src/pages/popup/Popup.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React!
-        </a>
-        <button
-          style={{
-            color: theme === "light" ? "#fff" : "#000",
-          }}
-          onClick={exampleThemeStorage.toggle}
-        >
-          Toggle theme: [{theme}]
-        </button>
-      </header>
+    <div className=" bg-black flex-col flex items-center justify-center h-screen">
+      <h1>test extension</h1>
+      <button
+        className="bg-blue-600 text-white px-4 py-2 rounded-lg"
+        onClick={() => {
+          captureAudio();
+        }}
+      >
+        capture audio
+      </button>
     </div>
   );
 };
